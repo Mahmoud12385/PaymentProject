@@ -1,7 +1,19 @@
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+enum EmployeeType {
+    SALARIED,
+    HOURLY,
+    COMMISSIONED
+}
+class EmployeeIdGenerator {
+    private static int currentId = 100;
 
+    public static int generateId() {
+        return currentId++;
+    }
+}
 
 
 abstract class Employee {
@@ -40,9 +52,9 @@ class SalariedEmployee extends Employee {
     @Override
     String generatePayStub() {
         return "Pay Stub - Salaried Employee\n" +
-               "Name: " + name + "\n" +
-               "Employee ID: " + employeeId + "\n" +
-               "Salary: $" + salary + "\n";
+                "Name: " + name + "\n" +
+                "Employee ID: " + employeeId + "\n" +
+                "Salary: $" + salary + "\n";
     }
 }
 
@@ -65,11 +77,11 @@ class HourlyEmployee extends Employee {
     @Override
     String generatePayStub() {
         return "Pay Stub - Hourly Employee\n" +
-               "Name: " + name + "\n" +
-               "Employee ID: " + employeeId + "\n" +
-               "Hours Worked: " + hoursWorked + "\n" +
-               "Hourly Rate: $" + hourlyRate + "\n" +
-               "Total Pay: $" + calculatePay() + "\n";
+                "Name: " + name + "\n" +
+                "Employee ID: " + employeeId + "\n" +
+                "Hours Worked: " + hoursWorked + "\n" +
+                "Hourly Rate: $" + hourlyRate + "\n" +
+                "Total Pay: $" + calculatePay() + "\n";
     }
 }
 
@@ -92,21 +104,21 @@ class CommissionedEmployee extends Employee {
     @Override
     String generatePayStub() {
         return "Pay Stub - Commissioned Employee\n" +
-               "Name: " + name + "\n" +
-               "Employee ID: " + employeeId + "\n" +
-               "Total Sales: $" + totalSales + "\n" +
-               "Commission Rate: " + (commissionRate * 100) + "%\n" +
-               "Total Pay: $" + calculatePay() + "\n";
+                "Name: " + name + "\n" +
+                "Employee ID: " + employeeId + "\n" +
+                "Total Sales: $" + totalSales + "\n" +
+                "Commission Rate: " + (commissionRate * 100) + "%\n" +
+                "Total Pay: $" + calculatePay() + "\n";
     }
 }
 
 
 
- class PayrollConsoleApp {
+class PayrollConsoleApp {
     public static void main(String[] args) throws IOException {
-    PayrollSystem p = new PayrollSystem();
-    p.start();
-    System.out.println("hello guys!");
+        PayrollSystem p = new PayrollSystem();
+        p.start();
+        System.out.println("hello guys!");
     }
 }
 
@@ -250,9 +262,6 @@ class PayrollSystem {
     }
 
     private void addEmployeeInteraction() {
-        System.out.print("Enter Employee ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
         System.out.print("Enter Employee Name: ");
         String name = scanner.nextLine();
         System.out.println("Select Employee Type: 1-Salaried, 2-Hourly, 3-Commissioned");
@@ -262,21 +271,21 @@ class PayrollSystem {
             case 1 -> {
                 System.out.print("Enter Salary: ");
                 double salary = scanner.nextDouble();
-                addEmployee(new SalariedEmployee(id, name, salary));
+                addEmployee(new SalariedEmployee(EmployeeIdGenerator.generateId(), name, salary));
             }
             case 2 -> {
                 System.out.print("Enter Hourly Rate: ");
                 double hourlyRate = scanner.nextDouble();
                 System.out.print("Enter Hours Worked: ");
                 int hoursWorked = scanner.nextInt();
-                addEmployee(new HourlyEmployee(id, name, hourlyRate, hoursWorked));
+                addEmployee(new HourlyEmployee(EmployeeIdGenerator.generateId(), name, hourlyRate, hoursWorked));
             }
             case 3 -> {
                 System.out.print("Enter Commission Rate (e.g., 0.1 for 10%): ");
                 double commissionRate = scanner.nextDouble();
                 System.out.print("Enter Total Sales: ");
                 double totalSales = scanner.nextDouble();
-                addEmployee(new CommissionedEmployee(id, name, commissionRate, totalSales));
+                addEmployee(new CommissionedEmployee(EmployeeIdGenerator.generateId(), name, commissionRate, totalSales));
             }
             default -> System.out.println("Invalid Employee Type!");
         }
@@ -291,7 +300,14 @@ class PayrollSystem {
     }
 
     private void removeEmployeeInteraction() {
-        System.out.print("Enter Employee ID to Remove: ");
+        System.out.print("Enter Employee ID to Remove: " + "\n");
+        for (Map.Entry<Integer, Employee> entry : employees.entrySet()) {
+            Integer key = entry.getKey();
+            Employee value = entry.getValue();
+
+            System.out.println("ID: " + key + ", Name: " + value.name); // Accessing Employee properties
+        }
+
         int id = scanner.nextInt();
         removeEmployee(id);
     }
