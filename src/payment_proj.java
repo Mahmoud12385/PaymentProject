@@ -48,12 +48,12 @@ class EmployeeIdGenerator {
 
 
 abstract class Employee {
-    int employeeId;
-    String name;
-    EmployeeType employeeType;
-    String paymentMethod;
-    String paymentDetails;
-    String taxInformation;
+    private int employeeId;
+    private String name;
+    private EmployeeType employeeType;
+    private String paymentMethod;
+    private String paymentDetails;
+    private String taxInformation;
 
     public Employee(int employeeId, String name, EmployeeType employeeType) {
         this.employeeId = employeeId;
@@ -61,17 +61,65 @@ abstract class Employee {
         this.employeeType = employeeType;
     }
 
+   
+    public int getEmployeeId() {// i donot need setter for id as it generated automataclly
+        return employeeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public EmployeeType getEmployeeType() {
+        return employeeType;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public String getPaymentDetails() {
+        return paymentDetails;
+    }
+
+    public String getTaxInformation() {
+        return taxInformation;
+    }
+
+    // Setters
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public void setPaymentDetails(String paymentDetails) {
+        this.paymentDetails = paymentDetails;
+    }
+
+    public void setTaxInformation(String taxInformation) {
+        this.taxInformation = taxInformation;
+    }
+
+    // Abstract methods
     abstract double calculatePay();
 
     abstract String generatePayStub();
 }
 
-
 class SalariedEmployee extends Employee {
-    double salary;
+    private double salary;
 
     public SalariedEmployee(int employeeId, String name, double salary) {
         super(employeeId, name, EmployeeType.SALARIED);
+        this.salary = salary;
+    }
+
+    // Getter
+    public double getSalary() {
+        return salary;
+    }
+
+    // Setter
+    public void setSalary(double salary) {
         this.salary = salary;
     }
 
@@ -83,20 +131,37 @@ class SalariedEmployee extends Employee {
     @Override
     String generatePayStub() {
         return "Pay Stub - Salaried Employee\n" +
-                "Name: " + name + "\n" +
-                "Employee ID: " + employeeId + "\n" +
+                "Name: " + getName() + "\n" +
+                "Employee ID: " + getEmployeeId() + "\n" +
                 "Salary: $" + salary + "\n";
     }
 }
 
-
 class HourlyEmployee extends Employee {
-    double hourlyRate;
-    int hoursWorked;
+    private double hourlyRate;
+    private int hoursWorked;
 
     public HourlyEmployee(int employeeId, String name, double hourlyRate, int hoursWorked) {
         super(employeeId, name, EmployeeType.HOURLY);
         this.hourlyRate = hourlyRate;
+        this.hoursWorked = hoursWorked;
+    }
+
+    // Getters
+    public double getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public int getHoursWorked() {
+        return hoursWorked;
+    }
+
+    // Setters
+    public void setHourlyRate(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public void setHoursWorked(int hoursWorked) {
         this.hoursWorked = hoursWorked;
     }
 
@@ -108,22 +173,39 @@ class HourlyEmployee extends Employee {
     @Override
     String generatePayStub() {
         return "Pay Stub - Hourly Employee\n" +
-                "Name: " + name + "\n" +
-                "Employee ID: " + employeeId + "\n" +
+                "Name: " + getName() + "\n" +
+                "Employee ID: " + getEmployeeId() + "\n" +
                 "Hours Worked: " + hoursWorked + "\n" +
                 "Hourly Rate: $" + hourlyRate + "\n" +
                 "Total Pay: $" + calculatePay() + "\n";
     }
 }
 
-// CommissionedEmployee Class
 class CommissionedEmployee extends Employee {
-    double commissionRate;
-    int totalSales;
+    private double commissionRate;
+    private int totalSales;
 
     public CommissionedEmployee(int employeeId, String name, double commissionRate, int totalSales) {
         super(employeeId, name, EmployeeType.COMMISSIONED);
         this.commissionRate = commissionRate;
+        this.totalSales = totalSales;
+    }
+
+    // Getters
+    public double getCommissionRate() {
+        return commissionRate;
+    }
+
+    public int getTotalSales() {
+        return totalSales;
+    }
+
+    // Setters
+    public void setCommissionRate(double commissionRate) {
+        this.commissionRate = commissionRate;
+    }
+
+    public void setTotalSales(int totalSales) {
         this.totalSales = totalSales;
     }
 
@@ -135,8 +217,8 @@ class CommissionedEmployee extends Employee {
     @Override
     String generatePayStub() {
         return "Pay Stub - Commissioned Employee\n" +
-                "Name: " + name + "\n" +
-                "Employee ID: " + employeeId + "\n" +
+                "Name: " + getName() + "\n" +
+                "Employee ID: " + getEmployeeId() + "\n" +
                 "Total Sales: $" + totalSales + "\n" +
                 "Commission Rate: " + (commissionRate * 100) + "%\n" +
                 "Total Pay: $" + calculatePay() + "\n";
@@ -160,33 +242,34 @@ class PayrollSystem {
     private final String credentialsFile = "user_credentials.txt";
 
     public PayrollSystem() throws IOException {
-        loadUserCredentials();// Load user credentials from file at startup
+        loadUserCredentials(); // Load user credentials from file at startup
         loadEmployees();
-
     }
+
     private void saveEmployees() throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("employees.txt"))) {
             for (Employee employee : employees.values()) {
-                // Format employee data into a CSV-like structure (ID, name, type, salary, etc.)
-                String employeeData = employee.employeeId + "," + employee.name + "," + employee.employeeType
-                        + "," + getEmployeeDetails(employee); // Use a method to get employee-specific data
+                String employeeData = employee.getEmployeeId() + "," + employee.getName() + "," + employee.getEmployeeType()
+                        + "," + getEmployeeDetails(employee);
                 writer.write(employeeData);
                 writer.newLine();
             }
         }
     }
+
     private String getEmployeeDetails(Employee employee) {
         if (employee instanceof SalariedEmployee) {
-            return String.valueOf(((SalariedEmployee) employee).salary);
+            return String.valueOf(((SalariedEmployee) employee).getSalary());
         } else if (employee instanceof HourlyEmployee) {
             HourlyEmployee hourlyEmployee = (HourlyEmployee) employee;
-            return hourlyEmployee.hourlyRate + "," + hourlyEmployee.hoursWorked;
+            return hourlyEmployee.getHourlyRate() + "," + hourlyEmployee.getHoursWorked();
         } else if (employee instanceof CommissionedEmployee) {
             CommissionedEmployee commissionedEmployee = (CommissionedEmployee) employee;
-            return commissionedEmployee.commissionRate + "," + commissionedEmployee.totalSales;
+            return commissionedEmployee.getCommissionRate() + "," + commissionedEmployee.getTotalSales();
         }
         return "";
     }
+
     private void loadEmployees() throws IOException {
         File file = new File("employees.txt");
         if (!file.exists()) return;
@@ -201,7 +284,6 @@ class PayrollSystem {
                     EmployeeType type = EmployeeType.valueOf(parts[2]);
                     Employee employee = null;
 
-                    // Create employee objects based on their type
                     switch (type) {
                         case SALARIED:
                             employee = new SalariedEmployee(id, name, Double.parseDouble(parts[3]));
@@ -221,7 +303,6 @@ class PayrollSystem {
         }
     }
 
-    // Load user credentials from file
     private void loadUserCredentials() throws IOException {
         File file = new File(credentialsFile);
         if (!file.exists()) return;
@@ -231,13 +312,12 @@ class PayrollSystem {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 2) {
-                    userCredentials.put(parts[0], parts[1]); // username, password
+                    userCredentials.put(parts[0], parts[1]);
                 }
             }
         }
     }
 
-    // Save user credentials to file
     private void saveUserCredentials() throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(credentialsFile))) {
             for (var entry : userCredentials.entrySet()) {
@@ -247,7 +327,6 @@ class PayrollSystem {
         }
     }
 
-    // User registration
     private void registerUser() throws IOException {
         System.out.print("Enter a username: ");
         String username = scanner.nextLine();
@@ -271,7 +350,6 @@ class PayrollSystem {
         System.out.println("Registration successful!");
     }
 
-    // User login
     private boolean loginUser() {
         System.out.print("Enter your username: ");
         String username = scanner.nextLine();
@@ -287,7 +365,6 @@ class PayrollSystem {
         }
     }
 
-    // start app from here (main menu)
     public void start() throws IOException {
         System.out.println("Welcome to the Company Payroll System!");
 
@@ -298,13 +375,13 @@ class PayrollSystem {
             System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> registerUser();
                 case 2 -> {
                     if (loginUser()) {
-                        menu(); // Proceed to the payroll system menu after successful login
+                        menu();
                     }
                 }
                 case 3 -> {
@@ -316,7 +393,6 @@ class PayrollSystem {
         }
     }
 
-    // Payroll system menu (after login)
     private void menu() {
         while (true) {
             System.out.println("\nPayroll System Menu:");
@@ -328,7 +404,7 @@ class PayrollSystem {
             System.out.println("6. Logout");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> addEmployeeInteraction();
@@ -345,12 +421,11 @@ class PayrollSystem {
         }
     }
 
-    // Employee management and payroll functionalities remain the same
     public void addEmployee(Employee employee) {
-        employees.put(employee.employeeId, employee);
+        employees.put(employee.getEmployeeId(), employee);
         System.out.println("Employee added successfully!");
         try {
-            saveEmployees(); // Save changes after adding an employee
+            saveEmployees();
         } catch (IOException e) {
             System.out.println("Error saving employee data.");
         }
@@ -385,253 +460,43 @@ class PayrollSystem {
             default -> System.out.println("Invalid Employee Type!");
         }
     }
+
     private void updateEmployeeInteraction() {
-        if(employees.isEmpty()) {
-            System.out.println("No Employees To Update");
-            return;
-        }
-        System.out.print("Enter Employee ID to Update: " + "\n");
-
-        for (Map.Entry<Integer, Employee> entry : employees.entrySet()) {
-            Integer key = entry.getKey();
-            Employee value = entry.getValue();
-
-            System.out.println("ID: " + key + ", Name: " + value.name); // Accessing Employee properties
-        }
-
+        System.out.print("Enter Employee ID to Update: ");
         int id = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine();
 
         Employee employee = employees.get(id);
         if (employee != null) {
-            EmployeeType type=employee.employeeType;
-            switch (type){
-                case SALARIED :
-                    SalariedEmployee salariedEmployee=(SalariedEmployee) employee;
-                    System.out.printf("1) Name: %s\n2)Salary:%.2f",salariedEmployee.name,salariedEmployee.salary);
-                    System.out.print("\nWhat Trait to Edit ");
-                    int attributeChoice = scanner.nextInt();
-                    scanner.nextLine();
-                    System.out.print("Enter new value: ");
-                    String input = scanner.next();
-                    Object newValue = changedValue(input);
-
-
-                    switch (attributeChoice){
-                        case 1 :
-                            updateDetails(employee,"name",newValue);
-                            break;
-                        case 2 :
-                            updateDetails(employee,"salary",newValue);
-                            break;
-                        default:
-                            System.out.println("Invalid Option");
-                            return;
-
-
-
-                    }
-                    break;
-                case COMMISSIONED:
-                    CommissionedEmployee commissionedEmployee=(CommissionedEmployee) employee;
-                    System.out.printf("1)Name: %s\n 2)Commission Rate:%f\n3)Total Sales:%d\n",commissionedEmployee.name,commissionedEmployee.commissionRate,commissionedEmployee.totalSales);
-                    System.out.print("\nWhat Trait to Edit\n");
-                    attributeChoice = scanner.nextInt();
-                    scanner.nextLine();
-                    System.out.print("Enter new value: ");
-                    input = scanner.next();
-                    newValue = changedValue(input);
-
-
-                    switch (attributeChoice){
-                        case 1 :
-                            updateDetails(employee,"name",newValue);
-                            break;
-                        case 2 :
-                            updateDetails(employee,"commissionRate",newValue);
-                            break;
-                        case 3 :
-                            updateDetails(employee,"totalSales",newValue);
-                            break;
-                        default:
-                            System.out.println("Invalid Option");
-                            return;
-
-
-
-
-                    }
-                    break;
-                case HOURLY :
-                    HourlyEmployee hourlyEmployee=(HourlyEmployee) employee;
-                    System.out.printf("1)Name: %s\n2)Hourly Rate:%.2f\n3)Worked Hours:%d",hourlyEmployee.name,hourlyEmployee.hourlyRate,hourlyEmployee.hoursWorked);
-                    System.out.print("\nWhat Trait to Edit ");
-                    attributeChoice = scanner.nextInt();
-                    scanner.nextLine();
-                    System.out.print("Enter new value: ");
-                    input = scanner.next();
-                    newValue = changedValue(input);
-
-
-                    switch (attributeChoice){
-                        case 1 :
-                            updateDetails(employee,"name",newValue);
-                            break;
-                        case 2 :
-                            updateDetails(employee,"hourlyRate",newValue);
-                            break;
-                        case 3 :
-                            updateDetails(employee,"hoursWorked",newValue);
-                            break;
-                        default:
-                            System.out.println("Invalid Option");
-
-                            return;
-
-
-                            
-                    }
-
-            }
-
-
-
-
-//            Object newValue = scanner.nextLine();
-
-//            updateEmployeeDetails(employee, attribute, newValue);
-
-            try {
-                saveEmployees(); // Save employees to file after updating details
-            } catch (IOException e) {
-                System.out.println("Error saving employees to file: " + e.getMessage());
-            }
-
-            System.out.println("Employee details updated successfully!");
-        } else {
-            System.out.println("Employee not found!");
-        }
-    }
-    public  Object changedValue(String input){
-
-        Object parsedValue;
-        if (input.matches("-?\\d+")) {
-            parsedValue = Integer.parseInt(input); // Integer
-        } else if (input.matches("-?\\d*\\.\\d+")) {
-            parsedValue = Double.parseDouble(input); // Double
-        } else if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
-            parsedValue = Boolean.parseBoolean(input); // Boolean
-        } else {
-            parsedValue = input; // String
-        }
-        return parsedValue;
-
-
-    }
-
-    public boolean updateDetails(Employee employee, String attribute, Object newValue) {
-        if (newValue == null) {
-            System.out.println("Invalid value: null is not allowed.");
-            return false;
-        }
-    
-        switch (attribute) {
-            case "name":
-                if (newValue instanceof String) {
-                    employee.name = (String) newValue;
-                } else {
-                    System.out.println("Invalid value for name.");
-                    return false;
+            EmployeeType type = employee.getEmployeeType();
+            switch (type) {
+                case SALARIED -> {
+                    SalariedEmployee salariedEmployee = (SalariedEmployee) employee;
+                    System.out.printf("1) Name: %s\n2) Salary: %.2f\n", salariedEmployee.getName(), salariedEmployee.getSalary());
+                    handleUpdate(employee);
                 }
-                break;
-    
-            case "salary":
-                if (newValue instanceof Number && employee instanceof SalariedEmployee) {
-                    ((SalariedEmployee) employee).salary = ((Number) newValue).doubleValue();
-                } else {
-                    System.out.println("Invalid value for salary.");
-                    return false;
+                case HOURLY -> {
+                    HourlyEmployee hourlyEmployee = (HourlyEmployee) employee;
+                    System.out.printf("1) Name: %s\n2) Hourly Rate: %.2f\n3) Hours Worked: %d\n", hourlyEmployee.getName(), hourlyEmployee.getHourlyRate(), hourlyEmployee.getHoursWorked());
+                    handleUpdate(employee);
                 }
-                break;
-    
-            case "hoursWorked":
-                if (newValue instanceof Number && employee instanceof HourlyEmployee) {
-                    ((HourlyEmployee) employee).hoursWorked = ((Number) newValue).intValue();
-                } else {
-                    System.out.println("Invalid value or employee type for hoursWorked.");
-                    return false;
+                case COMMISSIONED -> {
+                    CommissionedEmployee commissionedEmployee = (CommissionedEmployee) employee;
+                    System.out.printf("1) Name: %s\n2) Commission Rate: %.2f\n3) Total Sales: %d\n", commissionedEmployee.getName(), commissionedEmployee.getCommissionRate(), commissionedEmployee.getTotalSales());
+                    handleUpdate(employee);
                 }
-                break;
-    
-            case "totalSales":
-                if (newValue instanceof Number && employee instanceof CommissionedEmployee) {
-                    ((CommissionedEmployee) employee).totalSales = ((Number) newValue).intValue();
-                } else {
-                    System.out.println("Invalid value or employee type for totalSales.");
-                    return false;
-                }
-                break;
-    
-            case "hourlyRate":
-                if (newValue instanceof Number && employee instanceof HourlyEmployee) {
-                    ((HourlyEmployee) employee).hourlyRate = ((Number) newValue).doubleValue();
-                } else {
-                    System.out.println("Invalid value or employee type for hourlyRate.");
-                    return false;
-                }
-                break;
-    
-            case "commissionRate":
-                if (newValue instanceof Number && employee instanceof CommissionedEmployee) {
-                    ((CommissionedEmployee) employee).commissionRate = ((Number) newValue).doubleValue();
-                } else {
-                    System.out.println("Invalid value or employee type for commissionRate.");
-                    return false;
-                }
-                break;
-    
-            default:
-                System.out.println("Attribute not found or not updatable.");
-                return false;
-        }
-        return true;
-    }
-    
-    public void updateEmployeeDetails(Employee employee, String attribute, Object newValue) {
-
-     boolean IsThereUpdate =   updateDetails(employee,attribute, newValue);
-     if(!IsThereUpdate)
-            return;
-        try {
-            saveEmployees(); // Save changes after updating an employee
-        } catch (IOException e) {
-            System.out.println("Error saving employee data.");
-        }
-        System.out.println("Employee details updated successfully!");
-
-    }
-
-
-    public void removeEmployee(int employeeId) {
-        if (employees.remove(employeeId) != null) {
-            System.out.println("Employee removed successfully!");
-            try {
-                saveEmployees(); // Save changes after removing an employee
-            } catch (IOException e) {
-                System.out.println("Error saving employee data.");
             }
         } else {
             System.out.println("Employee not found!");
         }
     }
-
     private void removeEmployeeInteraction() {
         System.out.print("Enter Employee ID to Remove: " + "\n");
         for (Map.Entry<Integer, Employee> entry : employees.entrySet()) {
             Integer key = entry.getKey();
             Employee value = entry.getValue();
 
-            System.out.println("ID: " + key + ", Name: " + value.name); // Accessing Employee properties
+            System.out.println("ID: " + key + ", Name: " + value.getName()); // Accessing Employee properties
         }
 
         int id = scanner.nextInt();
